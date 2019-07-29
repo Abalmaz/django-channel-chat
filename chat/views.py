@@ -5,6 +5,8 @@ from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.utils.safestring import mark_safe
 
+from chat.models import Room
+
 
 def sign_up(request):
     form = UserCreationForm()
@@ -23,10 +25,14 @@ def user_list(request):
 
 
 def index(request):
-    return render(request, 'chat/index.html')
+    rooms = Room.objects.order_by("title")
+    return render(request, 'chat/index.html', {"rooms": rooms})
 
 
 def room(request, room_name):
+    room = Room.objects.filter(title=room_name).first()
+    messages = room.messages
     return render(request, 'chat/room.html', {
-        'room_name_json': mark_safe(json.dumps(room_name))
+        'room_name_json': mark_safe(json.dumps(room_name)),
+        'messages': messages
     })

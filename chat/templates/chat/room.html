@@ -2,30 +2,31 @@
 {% block title %}Chat's room{% endblock %}
 
 {% block content %}
-<ul id="chat-msg">
-    <li></li>
+<ul id="chat-thread">
+    {% for message in messages.all %}
+    <li>{{ message.message }} from {{ message.user }}</li>
+    {% endfor %}
 </ul>
-    <textarea id="chat-log" cols="100" rows="20"></textarea><br/>
     <input id="chat-message-input" type="text" size="100"/><br/>
     <input id="chat-message-submit" type="button" value="Send"/>
 {% endblock content %}
 {% block script %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/reconnecting-websocket/1.0.0/reconnecting-websocket.min.js"></script>
 <script>
-
     console.log(window.location)
     var msg = $("#chat-message-input")
-    var chat = $("#chat-log")
+    var chat = $("#chat-thread")
     var loc = window.location
     var ws_scheme = loc.protocol == "https:" ? "wss://" : "ws://"
     var ws_path = ws_scheme + loc.host + loc.pathname
 
-    console.log("Connecting to " + ws_path);
-    var chatSocket = new WebSocket(ws_path);
+    var chatSocket = new ReconnectingWebSocket(ws_path);
 
     chatSocket.onmessage = function(e) {
         console.log("message", e)
+        console.log(e.data)
         json_data = JSON.parse(e.data)
-        chat.append(json_data.message + ' from ' + json_data.username + '\n')
+        chat.append('<li>' + json_data.message + ' from ' + json_data.username + '</li>')
     };
 
     chatSocket.onopen = function(e){
