@@ -22,15 +22,16 @@ class ChatConsumer(AsyncConsumer):
         })
 
     async def websocket_disconnect(self, event):
-        print("disconnect", event)
-        # # Leave room group
-        # await self.channel_layer.group_discard(
-        #     self.room_group_name,
-        #     self.channel_name
-        # )
+        # print("disconnect", event)
+        # Leave room group
+        await self.channel_layer.group_discard(
+            self.chat_room,
+            self.channel_name
+        )
 
     # Receive message from WebSocket
     async def websocket_receive(self, event):
+        print("receive", event)
         message = event.get('text', None)
         text_data_json = json.loads(message)
         msg = text_data_json.get('message')

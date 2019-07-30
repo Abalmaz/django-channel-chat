@@ -30,7 +30,7 @@ def index(request):
 
 
 def room(request, room_name):
-    room = Room.objects.filter(title=room_name).first()
+    room = Room.objects.get_or_new(room_name)
     messages = room.messages
     return render(request, 'chat/room.html', {
         'room_name_json': mark_safe(json.dumps(room_name)),

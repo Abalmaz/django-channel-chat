@@ -5,6 +5,8 @@
 <ul id="chat-thread">
     {% for message in messages.all %}
     <li>{{ message.message }} from {{ message.user }}</li>
+    {% empty %}
+            <p>No message</p>
     {% endfor %}
 </ul>
     <input id="chat-message-input" type="text" size="100"/><br/>

@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User
 from django.db import models
 from django.conf import settings
 
@@ -15,6 +16,7 @@ class RoomManager(models.Manager):
 
 class Room(models.Model):
     title = models.CharField(max_length=100)
+    members = models.ManyToManyField(User, blank=True)
 
     objects = RoomManager()
 
@@ -28,7 +30,7 @@ class ChatMessage(models.Model):
                              blank=True,
                              on_delete=models.SET_NULL,
                              related_name="messages")
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name='sender',
+    user = models.ForeignKey(User, verbose_name='sender',
                              on_delete=models.CASCADE)
     message = models.TextField()
     timestamp = models.DateTimeField(auto_now_add=True)
