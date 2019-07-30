@@ -7,12 +7,6 @@ from chat.models import Room, ChatMessage
 
 class ChatConsumer(AsyncConsumer):
 
-    def __init__(self):
-        super().__init__()
-        self.room_obj = None
-        self.chat_room = None
-        self.msg = None
-
     async def websocket_connect(self, event):
         scope_room_name = self.scope['url_route']['kwargs']['room_name']
         self.room_obj = await self.get_room(scope_room_name)
@@ -41,6 +35,7 @@ class ChatConsumer(AsyncConsumer):
 
         handlers = {
             'send': self.send_msg,
+            'typing': self.typing_msg
         }
 
         message = event.get('text', None)
@@ -75,7 +70,21 @@ class ChatConsumer(AsyncConsumer):
                 "type": "chat_message",
                 "text": json.dumps({
                     'message': self.msg,
-                    'username': user.username
+                    'username': user.username,
+                    'event': 'send'
+                })
+            }
+        )
+
+    async def typing_msg(self):
+        user = self.scope['user']
+        await self.channel_layer.group_send(
+            self.chat_room,
+            {
+                "type": "chat_message",
+                "text": json.dumps({
+                    'username': user.username,
+                    'event': 'is_typing'
                 })
             }
         )

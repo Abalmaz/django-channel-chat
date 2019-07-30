@@ -9,8 +9,13 @@
             <p>No message</p>
     {% endfor %}
 </ul>
+<div class="is_typing">
+      <em id="user-is-typing"></em>
+</div>
+<div>
     <input id="chat-message-input" type="text" size="100"/><br/>
     <input id="chat-message-submit" type="button" value="Send"/>
+</div>
 {% endblock content %}
 {% block script %}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/reconnecting-websocket/1.0.0/reconnecting-websocket.min.js"></script>
@@ -28,7 +33,19 @@
         console.log("message", e)
         console.log(e.data)
         json_data = JSON.parse(e.data)
-        chat.append('<li>' + json_data.message + ' from ' + json_data.username + '</li>')
+        console.log(json_data['event'])
+        if (json_data['event'] === 'send'){
+            chat.append('<li>' + json_data.message + ' from ' + json_data.username + '</li>')
+        }
+        else if(json_data['event'] === 'is_typing'){
+            var clearInterval = 900; //0.9 seconds
+            var clearTimerId;
+            $('#user-is-typing').html(json_data.username + ' is typing...');
+            clearTimeout(clearTimerId);
+            clearTimerId = setTimeout(function () {
+              $('#user-is-typing').html('');
+            }, clearInterval);
+        }
     };
 
     chatSocket.onopen = function(e){
@@ -43,6 +60,11 @@
     document.querySelector('#chat-message-input').onkeyup = function(e) {
         if (e.keyCode === 13) {  // enter, return
             document.querySelector('#chat-message-submit').click();
+        }
+        else {
+            chatSocket.send(JSON.stringify({
+            'command': 'typing'
+        }));
         }
     };
 
