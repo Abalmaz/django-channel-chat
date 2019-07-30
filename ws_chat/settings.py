@@ -69,7 +69,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'ws_chat.wsgi.application'
+# WSGI_APPLICATION = 'ws_chat.wsgi.application'
 
 
 # Database
@@ -131,3 +131,7 @@ CHANNEL_LAYERS = {
         },
     },
 }
+
+# redirect
+LOGIN_REDIRECT_URL = 'index'
+LOGOUT_REDIRECT_URL = 'index'
