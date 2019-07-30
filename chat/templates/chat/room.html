@@ -50,7 +50,8 @@
         var messageInput = $("#chat-message-input")
         var message = messageInput.val()
         chatSocket.send(JSON.stringify({
-            'message': message
+            'message': message,
+            'command': 'send'
         }));
 
         messageInput.val('')
