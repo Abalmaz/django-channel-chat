@@ -11,6 +11,8 @@ class ChatConsumer(AsyncConsumer):
         scope_room_name = self.scope['url_route']['kwargs']['room_name']
         self.room_obj = await self.get_room(scope_room_name)
         self.chat_room = self.room_obj.group_name
+        user = self.scope['user']
+        self.username = user.username if user.is_authenticated else 'anonymous'
 
         # Join room group
         await self.channel_layer.group_add(
@@ -70,20 +72,19 @@ class ChatConsumer(AsyncConsumer):
                 "type": "chat_message",
                 "text": json.dumps({
                     'message': self.msg,
-                    'username': user.username,
+                    'username': self.username,
                     'event': 'send'
                 })
             }
         )
 
     async def typing_msg(self):
-        user = self.scope['user']
         await self.channel_layer.group_send(
             self.chat_room,
             {
                 "type": "chat_message",
                 "text": json.dumps({
-                    'username': user.username,
+                    'username': self.username,
                     'event': 'is_typing'
                 })
             }
