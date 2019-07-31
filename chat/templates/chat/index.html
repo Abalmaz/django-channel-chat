@@ -5,7 +5,7 @@
 {% block content %}
      <ul class="rooms">
         {% for room in rooms %}
-            <li class="room-link" data-room-id="{{ room.id }}">{{ room.group_name }}</li>
+         <li class="room-link" data-room-id="{{ room.id }}"><a href="{% url 'room' room.id %}">{{ room.group_name }}</a></li>
         {% endfor %}
     </ul>
 
